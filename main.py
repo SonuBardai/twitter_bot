@@ -22,14 +22,39 @@ class PipelineError(Exception):
 
 
 @click.command()
-def tweet():
-    """Simple tweet command with three steps."""
+@click.option("--stage", type=click.Choice(["ingest", "transform", "post"], case_sensitive=False), help="Run only a specific stage of the pipeline")
+def tweet(stage: str = None):
+    """Run the tweet pipeline or a specific stage.
+
+    If no stage is specified, runs all stages in sequence: ingest -> transform -> post
+    """
     try:
-        ingest()
-        transform()
-        post()
+        if stage is None or stage == "ingest":
+            click.echo("🚀 Starting ingest stage...")
+            ingest()
+        else:
+            click.echo("⏭️  Skipping ingest stage")
+
+        if stage is None or stage == "transform":
+            click.echo("\n🔄 Starting transform stage...")
+            transform()
+        else:
+            click.echo("⏭️  Skipping transform stage")
+
+        if stage is None or stage == "post":
+            click.echo("\n📤 Starting post stage...")
+            post()
+        else:
+            click.echo("⏭️  Skipping post stage")
+
+        if stage is None:
+            click.echo("\n✅ All pipeline stages completed successfully!")
+        else:
+            click.echo(f"\n✅ Stage '{stage}' completed successfully!")
+
     except Exception as e:
-        click.echo(f"❌ Unexpected error in tweet pipeline: {str(e)}", err=True)
+        stage_msg = f" in stage '{stage}'" if stage else ""
+        click.echo(f"❌ Unexpected error{stage_msg}: {str(e)}", err=True)
         raise
 
 

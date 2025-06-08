@@ -20,6 +20,39 @@ def get_next_cache_filename(dir_name: str) -> str:
         count += 1
 
 
+def get_latest_cache_file(dir_name: str) -> str:
+    """
+    Get the most recent cache file from the specified directory.
+    
+    Args:
+        dir_name: Name of the directory to search for cache files
+        
+    Returns:
+        str: Path to the most recent cache file
+        
+    Raises:
+        FileNotFoundError: If no cache files are found in the directory
+    """
+    cache_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), dir_name)
+    
+    if not os.path.exists(cache_dir):
+        raise FileNotFoundError(f"Cache directory not found: {cache_dir}")
+    
+    # Get all JSON files in the directory
+    cache_files = [
+        os.path.join(cache_dir, f) 
+        for f in os.listdir(cache_dir) 
+        if f.endswith('.json')
+    ]
+    
+    if not cache_files:
+        raise FileNotFoundError(f"No cache files found in {cache_dir}")
+    
+    # Sort by modification time, newest first
+    latest_file = max(cache_files, key=os.path.getmtime)
+    return latest_file
+
+
 def save_to_cache(data: Dict[str, Any], dir_name: str) -> str:
     """Save ingested data to a timestamped JSON file in the directory."""
     try:
