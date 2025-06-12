@@ -4,3 +4,4 @@ __pycache__
 raw_cache
 ingest_cache
 transform_cache
+producthunt_cache

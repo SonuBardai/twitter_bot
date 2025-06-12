@@ -1,11 +1,12 @@
+from datetime import datetime
 import click
 from dotenv import load_dotenv
+from producthunt import producthunt as producthunt_cmd
 from ingest import ingest
 from transform import transform
 from post import post
 
 
-# Load environment variables
 load_dotenv()
 
 
@@ -58,7 +59,28 @@ def tweet(stage: str = None):
         raise
 
 
+@click.command()
+def retweet():
+    click.echo("🚀 Starting retweet stage...")
+
+
+@click.command()
+def comment():
+    click.echo("🚀 Starting comment stage...")
+
+
+@click.command()
+def producthunt():
+    click.echo("🚀 Starting product hunt scrape...")
+    date = datetime.now()
+    producthunt_cmd(date=date)
+
+
 cli.add_command(tweet)
+cli.add_command(retweet)
+cli.add_command(comment)
+
+cli.add_command(producthunt)
 
 if __name__ == "__main__":
     cli()
