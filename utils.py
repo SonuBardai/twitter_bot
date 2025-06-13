@@ -1,16 +1,18 @@
 import os
 import json
 import datetime
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import click
 
 
-def get_next_cache_filename(dir_name: str, format: str = "json") -> str:
+def get_next_cache_filename(date: Optional[datetime], dir_name: str, format: str = "json") -> str:
     """Generate the next available cache filename with incrementing count."""
     cache_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), dir_name)
     os.makedirs(cache_dir, exist_ok=True)
 
-    base_name = datetime.datetime.now().strftime("%Y-%m-%dT%H")
+    if not date:
+        date = datetime.datetime.now()
+    base_name = date.strftime("%Y-%m-%dT%H")
     count = 0
 
     while True:
@@ -20,7 +22,7 @@ def get_next_cache_filename(dir_name: str, format: str = "json") -> str:
         count += 1
 
 
-def get_latest_cache_file(dir_name: str) -> str:
+def get_latest_cache_file(dir_name: str, format: str = "json") -> str:
     """
     Get the most recent cache file from the specified directory.
 
@@ -39,7 +41,7 @@ def get_latest_cache_file(dir_name: str) -> str:
         raise FileNotFoundError(f"Cache directory not found: {cache_dir}")
 
     # Get all JSON files in the directory
-    cache_files = [os.path.join(cache_dir, f) for f in os.listdir(cache_dir) if f.endswith(".json")]
+    cache_files = [os.path.join(cache_dir, f) for f in os.listdir(cache_dir) if f.endswith(f".{format}")]
 
     if not cache_files:
         raise FileNotFoundError(f"No cache files found in {cache_dir}")
@@ -49,10 +51,10 @@ def get_latest_cache_file(dir_name: str) -> str:
     return latest_file
 
 
-def save_to_cache(data: Dict[str, Any], dir_name: str, format: str = "json") -> str:
+def save_to_cache(data: Dict[str, Any], dir_name: str, format: str = "json", date: Optional[datetime] = None) -> str:
     """Save ingested data to a timestamped JSON file in the directory."""
     try:
-        cache_file = get_next_cache_filename(dir_name, format)
+        cache_file = get_next_cache_filename(date, dir_name, format)
 
         # Write data to file
         with open(cache_file, "w", encoding="utf-8") as f:

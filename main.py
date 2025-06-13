@@ -70,9 +70,10 @@ def comment():
 
 
 @click.command()
-def producthunt():
+@click.option("--date", type=click.DateTime(), help="Date to scrape")
+def producthunt(date: datetime = None):
     click.echo("🚀 Starting product hunt scrape...")
-    date = datetime.now()
+    date = datetime.now() if date is None else date
     producthunt_cmd(date=date)
 
 

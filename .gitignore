@@ -5,3 +5,5 @@ raw_cache
 ingest_cache
 transform_cache
 producthunt_cache
+producthunt_data_cache
+db
