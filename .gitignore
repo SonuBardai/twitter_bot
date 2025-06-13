@@ -7,3 +7,5 @@ transform_cache
 producthunt_cache
 producthunt_data_cache
 db
+.DS_Store
+producthunt_product_cache
